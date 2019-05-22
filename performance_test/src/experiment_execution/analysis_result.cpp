@@ -17,6 +17,7 @@
 #include <iomanip>
 #include <string>
 #include <iostream>
+#include <ctime>
 
 namespace performance_test
 {
@@ -67,6 +68,7 @@ std::string AnalysisResult::csv_header(const bool pretty_print, std::string st)
 
   std::stringstream ss;
   ss << "T_experiment" << st;
+  ss << "T_timestamp" << st;
   ss << "T_loop" << st;
   ss << "received" << st;
   ss << "sent" << st;
@@ -120,6 +122,7 @@ std::string AnalysisResult::to_csv_string(const bool pretty_print, std::string s
 
   ss << std::fixed;
   ss << m_experiment_start.count() << st;
+  ss << std::time(0) << st;
   ss << m_loop_start.count() << st;
   ss << std::setprecision(0);
   ss << m_num_samples_received << st;
