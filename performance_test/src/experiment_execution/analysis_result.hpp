@@ -73,6 +73,7 @@ public:
    * \return A string with the contained data as CSV row.
    */
   std::string to_csv_string(const bool pretty_print = false, std::string st = ",") const;
+  std::string to_pipe(const int fd, const bool pretty_print = false, std::string st = "\n") const;
 
 private:
   const std::chrono::duration<double> m_experiment_start;

@@ -21,6 +21,11 @@
 #include <string>
 #include <vector>
 
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include "analyze_runner.hpp"
 
 #include "analysis_result.hpp"
@@ -63,6 +68,13 @@ void AnalyzeRunner::run() const
 
   const auto experiment_start = std::chrono::steady_clock::now();
 
+  int fd;
+  char * myfifo = "/tmp/benchmark";
+
+  /* create the FIFO (named pipe) */
+  mkfifo(myfifo, 0666);
+  //fd = open(myfifo, O_RDWR | O_APPEND | O_NONBLOCK);
+  m_ec.log("FIFO Created");
   while (!check_exit(experiment_start)) {
     const auto loop_start = std::chrono::steady_clock::now();
 
@@ -80,13 +92,15 @@ void AnalyzeRunner::run() const
     auto now = std::chrono::steady_clock::now();
     auto loop_diff_start = now - loop_start;
     auto experiment_diff_start = now - experiment_start;
-    analyze(loop_diff_start, experiment_diff_start);
+
+    analyze(loop_diff_start, experiment_diff_start, fd);
   }
 }
 
 void AnalyzeRunner::analyze(
   const std::chrono::duration<double> loop_diff_start,
-  const std::chrono::duration<double> experiment_diff_start) const
+  const std::chrono::duration<double> experiment_diff_start,
+  int fd) const
 {
   std::vector<StatisticsTracker> latency_vec(m_sub_runners.size());
   std::transform(m_sub_runners.begin(), m_sub_runners.end(), latency_vec.begin(),
@@ -132,7 +146,10 @@ void AnalyzeRunner::analyze(
     StatisticsTracker(ltr_sub_vec)
   );
 
-  m_ec.log(result.to_csv_string(true));
+  //m_ec.log(result.to_csv_string(true));
+
+  //m_ec.log(result.to_pipe(fd, true));
+  result.to_pipe(fd, true);
 }
 
 bool AnalyzeRunner::check_exit(std::chrono::steady_clock::time_point experiment_start) const

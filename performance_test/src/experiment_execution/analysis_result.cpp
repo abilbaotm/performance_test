@@ -19,6 +19,13 @@
 #include <iostream>
 #include <ctime>
 
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <string.h>
+
+
 namespace performance_test
 {
 
@@ -174,5 +181,34 @@ std::string AnalysisResult::to_csv_string(const bool pretty_print, std::string s
 
   return ss.str();
 }
+std::string AnalysisResult::to_pipe(int fd, const bool pretty_print, std::string st) const
+{
+    std::stringstream ss;
 
+    if (strcmp (std::to_string(m_latency.min()* 1000.0).c_str(), "inf") != 0 && strcmp (std::to_string(m_latency.max()* 1000.0).c_str(), "-inf") != 0)
+    {
+        ss << "min.value " << std::time(0) << ":" << m_latency.min() * 1000.0 << st;
+        ss << "max.value " << std::time(0) << ":" << m_latency.max() * 1000.0 << st;
+        ss << "mean.value " << std::time(0) << ":" << m_latency.mean() * 1000.0 << st;
+
+        // int fd;
+        char * myfifo = "/tmp/benchmark";
+
+        /* create the FIFO (named pipe) */
+        //mkfifo(myfifo, 0666);
+
+        /* write "Hi" to the FIFO */
+        fd = open(myfifo, O_RDWR | O_APPEND | O_NONBLOCK);
+
+        write(fd, ss.str().c_str(), (ss.tellp()));
+        //close(fd);
+
+        /* remove the FIFO */
+        //unlink(myfifo);
+
+
+    }
+    return ss.str();
+
+}
 }  // namespace performance_test
