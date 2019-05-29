@@ -73,7 +73,7 @@ void AnalyzeRunner::run() const
 
   /* create the FIFO (named pipe) */
   mkfifo(myfifo, 0666);
-  //fd = open(myfifo, O_RDWR | O_APPEND | O_NONBLOCK);
+  fd = open(myfifo, O_RDWR | O_APPEND | O_NONBLOCK);
   m_ec.log("FIFO Created");
   while (!check_exit(experiment_start)) {
     const auto loop_start = std::chrono::steady_clock::now();

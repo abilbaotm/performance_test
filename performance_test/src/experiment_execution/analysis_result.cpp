@@ -191,21 +191,7 @@ std::string AnalysisResult::to_pipe(int fd, const bool pretty_print, std::string
         ss << "max.value " << std::time(0) << ":" << m_latency.max() * 1000.0 << st;
         ss << "mean.value " << std::time(0) << ":" << m_latency.mean() * 1000.0 << st;
 
-        // int fd;
-        char * myfifo = "/tmp/benchmark";
-
-        /* create the FIFO (named pipe) */
-        //mkfifo(myfifo, 0666);
-
-        /* write "Hi" to the FIFO */
-        fd = open(myfifo, O_RDWR | O_APPEND | O_NONBLOCK);
-
         write(fd, ss.str().c_str(), (ss.tellp()));
-        //close(fd);
-
-        /* remove the FIFO */
-        //unlink(myfifo);
-
 
     }
     return ss.str();
