@@ -24,6 +24,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <string.h>
+#include <math.h>
 
 
 namespace performance_test
@@ -185,7 +186,8 @@ std::string AnalysisResult::to_pipe(int fd, const bool pretty_print, std::string
 {
     std::stringstream ss;
 
-    if (strcmp (std::to_string(m_latency.min()* 1000.0).c_str(), "inf") != 0 && strcmp (std::to_string(m_latency.max()* 1000.0).c_str(), "-inf") != 0)
+    if (m_latency.min() != std::numeric_limits<double>::max() && m_latency.min() != -std::numeric_limits<double>::max()
+        && m_latency.max() != std::numeric_limits<double>::max() && m_latency.max() != -std::numeric_limits<double>::max() )
     {
         ss << "min.value " << std::time(0) << ":" << m_latency.min() * 1000.0 << st;
         ss << "max.value " << std::time(0) << ":" << m_latency.max() * 1000.0 << st;
