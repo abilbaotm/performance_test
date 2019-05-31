@@ -193,9 +193,9 @@ std::string AnalysisResult::to_pipe(int fd, const bool pretty_print, std::string
         ss << "max.value " << std::time(0) << ":" << m_latency.max() * 1000.0 << st;
         ss << "mean.value " << std::time(0) << ":" << m_latency.mean() * 1000.0 << st;
 
-        write(fd, ss.str().c_str(), (ss.tellp()));
-
+        write(fd, ss.str().c_str(), (ss.str().length()));
     }
+
     return ss.str();
 
 }
